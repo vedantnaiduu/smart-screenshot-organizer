@@ -1,0 +1,12 @@
+{
+  "name": "screenshot-organizer",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": ["mobile", "backend", "shared"],
+  "scripts": {
+    "build": "echo build root",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  }
+}

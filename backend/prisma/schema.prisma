@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  
+  screenshots Screenshot[]
+  tags      Tag[]
+}
+
+model Screenshot {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  originalFilePath String
+  thumbnailUrl String?
+  fullSizeUrl  String?
+  fileSize     Int?
+  width        Int?
+  height       Int?
+  
+  createdAt    DateTime @default(now())
+  takenAt      DateTime?
+  deviceType   String?
+  sourceApp    String?
+  
+  aiProcessed  Boolean  @default(false)
+  isDeleted    Boolean  @default(false)
+  deletedAt    DateTime?
+  
+  metadata     Json?
+  
+  ocr          OcrContent?
+  tags         ScreenshotTag[]
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  
+  name      String
+  color     String?
+  isSystemTag Boolean @default(false)
+  createdAt DateTime @default(now())
+  
+  screenshots ScreenshotTag[]
+  
+  @@unique([userId, name])
+}
+
+model ScreenshotTag {
+  screenshotId String
+  tagId        String
+  
+  screenshot   Screenshot @relation(fields: [screenshotId], references: [id])
+  tag          Tag        @relation(fields: [tagId], references: [id])
+  
+  confidenceScore Float?
+  isAiGenerated  Boolean @default(false)
+  createdAt DateTime @default(now())
+  
+  @@id([screenshotId, tagId])
+}
+
+model OcrContent {
+  id          String   @id @default(uuid())
+  screenshotId String  @unique
+  
+  screenshot  Screenshot @relation(fields: [screenshotId], references: [id])
+  
+  extractedText String?
+  language    String?
+  confidenceScore Float?
+  boundingBoxes Json?
+  processedAt DateTime @default(now())
+}
