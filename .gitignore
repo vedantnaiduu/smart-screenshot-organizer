@@ -156,3 +156,8 @@ coverage/
 
 # Prisma
 prisma/migrations/
+
+# Cursor (AI assistant config)
+.cursor/
+.cursorrules
+.cursorrules.*
